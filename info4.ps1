@@ -266,7 +266,7 @@ function Test-Port{
 }
 
 
-"Rabotaet EHVM... zhdite..."
+"Работает ЭВМM... zhdite..."
 ###SLUZHBA BRANDMAUEHRA
 $servicefw=Get-Service mpssvc #zapros statusa sluzhby brandmauehra
 
