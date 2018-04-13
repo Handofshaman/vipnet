@@ -404,7 +404,7 @@ if ($vipnet2 -eq "True" -and $IEProxy -eq "1" -and $etran.Open -ne "True")
         "1. V nastrojkah PO ViPNet vyklyucheny tunneli;"
         "2. Tunneli nastroeny na raboty po virtual'nym adresam, dostup nuzhno proverit' vruchnuyu;"
         "3. Dostup blokiruetsya na koordinatore;"
-        "4. Slomalsya EHTRAN."
+        "4. Slomalsya EHTRAN.кирилЛИЦА"
         }
     }
-кирилЛИЦА
+
