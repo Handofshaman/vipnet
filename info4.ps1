@@ -407,3 +407,4 @@ if ($vipnet2 -eq "True" -and $IEProxy -eq "1" -and $etran.Open -ne "True")
         "4. Slomalsya EHTRAN."
         }
     }
+кирилЛИЦА
