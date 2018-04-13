@@ -2,7 +2,7 @@ $ntpserver= "0.ru.pool.ntp.org"
 $etrserver= "10.248.35.9"
 $win10build="1709"
 
-######Funkciya proverki portov do 274 stroki
+######Функция проверки портов до 274 строки
 function Test-Port{   
 <#     
 .SYNOPSIS     
@@ -266,11 +266,11 @@ function Test-Port{
 }
 
 
-"Работает ЭВМM... zhdite..."
-###SLUZHBA BRANDMAUEHRA
-$servicefw=Get-Service mpssvc #zapros statusa sluzhby brandmauehra
+"Работает ЭВМ... ждите..."
+###СЛУЖБА БРАНДМАУЭРА
+$servicefw=Get-Service mpssvc #запрос статуса службы брандмауэра
 
-###VERSIYA OS
+###ВЕРСИЯ ОС
 $ver_major=[Environment]::OSVersion.Version.Major
 $ver_minor=[Environment]::OSVersion.Version.Minor
 if ($ver_major -eq "6" -and $ver_minor -lt "3") {$ver="old"}
@@ -278,61 +278,61 @@ if ($ver_major -eq "6" -and $ver_minor -eq "3") {$ver="new"}
 if ($ver_major -eq "10") {$ver="new"}
 
 
-###PROVERKA VREMENI
-$date = (Get-Date).ToString('dd MMMM yyyyg.') #poluchit' datu
-$time = (Get-Date).ToString('HH:mm') #poluchit' vremya v formate 24h
-$timezone=[TimeZoneInfo]::Local.DisplayName | %{ $_.Split(" ")[0]; } #poluchit' chasovoj poyas i ubrat' vse lishnee, krome UTC*
+###ПРОВЕРКА ВРЕМЕНИ
+$date = (Get-Date).ToString('dd MMMM yyyyг.') #получить дату
+$time = (Get-Date).ToString('HH:mm') #получить время в формате 24h
+$timezone=[TimeZoneInfo]::Local.DisplayName | %{ $_.Split(" ")[0]; } #получить часовой пояс и убрать все лишнее, кроме UTC*
 
 
-$dirtytimentp=w32tm /stripchart /computer:$ntpserver /samples:3 #zaprosit' ntp server tekushchee vremya
-[string]$timentp=$dirtytimentp[5] #vydelit' stroku s otvetom servera
-$checkntp=$timentp.IndexOf("d:") #proverka otklika ntp servera
-#$timenew= $timentp.Substring(0,8) #vydelit' tekushchee vremya
-if ($checkntp -ne "-1") #esli ntp server dostupen
+$dirtytimentp=w32tm /stripchart /computer:$ntpserver /samples:3 #запросить ntp сервер текущее время
+[string]$timentp=$dirtytimentp[5] #выделить строку с ответом сервера
+$checkntp=$timentp.IndexOf("d:") #проверка отклика ntp сервера
+#$timenew= $timentp.Substring(0,8) #выделить текущее время
+if ($checkntp -ne "-1") #если ntp сервер доступен
 {
-$timentp= $timentp.Split(":")[4] #vydelit' smeshchenie vremeni k ehtalonnomu serveru NTP
-$timentp= $timentp.Split(".")[0] #ubrat' iz smeshcheniya cifry posle zapyatoj.
-[int]$timentp= $timentp.Substring(1.) #vzyat' modul' ot chisla.
+$timentp= $timentp.Split(":")[4] #выделить смещение времени к эталонному серверу NTP
+$timentp= $timentp.Split(".")[0] #убрать из смещения цифры после запятой.
+[int]$timentp= $timentp.Substring(1.) #взять модуль от числа.
 }
-else #esli Ntp server ne dostupen
+else #если Ntp сервер не доступен
 {
 [int]$timentp=-1
 }
-#v zavisimosti ot raskhozhdeniya vremeni sgenerirovat' soobshchenie
-if ($timentp -lt "60") {$count_time="1"; $message_time="Vremya na komp'yutere sootvetstvuet serveru $ntpserver"}
-if ($timentp -ge "60" -and $timenet -lt "3600") {$count_time="2"; $message_time="Vremya na komp'yutere otlichaetsya ot servera $ntpserver v predelah odnogo chasa"}
-if ($timentp -ge "3600" -and $timentp -lt "86400") {$count_time="3"; $message_time="Vremya na komp'yutere otlichaetsya ot servera $ntpserver bolee chem na odin chas"}
-if ($timentp -ge "86400") {$count_time="4";  $message_time="Data na komp'yutere olichaetsya ot servera $ntpserver"}
-if ($timentp -eq "-1") {$count_time="5"; $message_time="Server vremeni $ntpserver nedostupen, prover'te datu i vremya vruchnuyu"}
+#в зависимости от расхождения времени сгенерировать сообщение
+if ($timentp -lt "60") {$count_time="1"; $message_time="Время на компьютере соответствует серверу $ntpserver"}
+if ($timentp -ge "60" -and $timenet -lt "3600") {$count_time="2"; $message_time="Время на компьютере отличается от сервера $ntpserver в пределах одного часа"}
+if ($timentp -ge "3600" -and $timentp -lt "86400") {$count_time="3"; $message_time="Время на компьютере отличается от сервера $ntpserver более чем на один час"}
+if ($timentp -ge "86400") {$count_time="4";  $message_time="Дата на компьютере оличается от сервера $ntpserver"}
+if ($timentp -eq "-1") {$count_time="5"; $message_time="Сервер времени $ntpserver недоступен, проверьте дату и время вручную"}
 
-###PROVERKA IE
+###ПРОВЕРКА IE
 
-$IE=Get-ItemProperty -path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Connections" #vetka s nastrojkami IE
-$IEProxy=$IE.DefaultConnectionSettings[8] #parametr nastrojki proksi
+$IE=Get-ItemProperty -path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Connections" #ветка с настройками IE
+$IEProxy=$IE.DefaultConnectionSettings[8] #параметр настройки прокси
 
-###PROVERKA KOORDINATORA
+###ПРОВЕРКА КООРДИНАТОРА
 [string]$reg_vipnet= get-process | where {$_.ProcessName -eq 'monitor'} | Get-ChildItem
 
-if (!$reg_vipnet){} #Esli process ne zapushchen, to proverku koordinatora provodit' ne pytat'sya
+if (!$reg_vipnet){} #Если процесс не запущен, то проверку координатора проводить не пытаться
 else
 {
-#$path_vipnet= $reg_vipnet -Split "\\Monitor.exe" #najti katalog s vipnet
-$path_vipnet= $reg_vipnet -replace "\\Monitor.exe"  #najti katalog s vipnet
-[string]$vipnet= get-content "$path_vipnet\APN*.TXT" | select-string "0000 S S " #najti v fajle koordinator, za kotorym zaveden AP
-$name_coord_vipnet= $vipnet.Substring(9,51) #vydelit' imya koordinatora s probelami v konce imeni
-$name_coord_vipnet= $name_coord_vipnet -replace "  " #vydelit' imya koordinatora bez probelami
-$id_coord_vipnet= $vipnet.Substring(60,9) #najti Id koordinatora
-$id2_coord_vipnet= $vipnet.Substring(74,12)  #####neponyatki s kolichestvom nulej. v fajle ipliradr.do$ dva ili chetyre nulya?
-[string]$ip_coord_vipnet= get-content "$path_vipnet\fireaddr.doc" | Select-String -Pattern $id_coord_vipnet |%{($_ -split "[ ]")[1]} #najti ip-koordinatora
+#$path_vipnet= $reg_vipnet -Split "\\Monitor.exe" #найти каталог с vipnet
+$path_vipnet= $reg_vipnet -replace "\\Monitor.exe"  #найти каталог с vipnet
+[string]$vipnet= get-content "$path_vipnet\APN*.TXT" | select-string "0000 S S " #найти в файле координатор, за которым заведен АП
+$name_coord_vipnet= $vipnet.Substring(9,51) #выделить имя координатора с пробелами в конце имени
+$name_coord_vipnet= $name_coord_vipnet -replace "  " #выделить имя координатора без пробелами
+$id_coord_vipnet= $vipnet.Substring(60,9) #найти Id координатора
+$id2_coord_vipnet= $vipnet.Substring(74,12)  #####непонятки с количеством нулей. в файле ipliradr.do$ два или четыре нуля?
+[string]$ip_coord_vipnet= get-content "$path_vipnet\fireaddr.doc" | Select-String -Pattern $id_coord_vipnet |%{($_ -split "[ ]")[1]} #найти ip-координатора
 #$vipnet2= Test-NetConnection -ComputerName $ip_coord_vipnet
-$vipnet2= Test-Connection $ip_coord_vipnet -count 2 -quiet -ErrorAction SilentlyContinue #proverit' soedinenie s koordinatorom
+$vipnet2= Test-Connection $ip_coord_vipnet -count 2 -quiet -ErrorAction SilentlyContinue #проверить соединение с координатором
 }
 
-###PROVERKA NALICHIYA TUNNELYA
+###ПРОВЕРКА НАЛИЧИЯ ТУННЕЛЯ
 $tun1_coord_vipnet= get-content "$path_vipnet\ipliradr.do$" | Select-String -Pattern $id2_coord_vipnet | Select-String -Pattern " S:" | Select-String -NotMatch "-" |%{($_ -split "[ S:]")[4]}
 $tun2_coord_vipnet= get-content "$path_vipnet\ipliradr.do$" | Select-String -Pattern $id2_coord_vipnet | Select-String -Pattern " S:" | Select-String -Pattern "-" |%{($_ -split "[ S:]")[4]}
 $tun1_etran= $tun1_coord_vipnet | Select-String -Pattern $etrserver
-foreach ($temp in $tun2_coord_vipnet) #cikl dlya postrochnogo chteniya
+foreach ($temp in $tun2_coord_vipnet) #цикл для построчного чтения
 {
 $x= $temp.Split("-")[0]
 $y= $temp.Split("-")[1]
@@ -351,59 +351,59 @@ if ($ip1 -le "184034057" -and $ip2 -ge "184034057"){$tun2_etran= $etrserver }
 }
 if ($tun1_etran -eq "$etrserver" -or $tun2_etran -eq "$etrserver") {$tun_etran= "$etrserver"}
 
-###PROVERKA EHTRANA
+###ПРОВЕРКА ЭТРАНА
 if ($tun_etran -eq "$etrserver" -and $vipnet2 -eq "True")
     {
     #$etran= Test-NetConnection -ComputerName 10.248.35.9 -Port 8092
     $etran= Test-Port -computer $etrserver -port 8092   
     }
 
-###VYVOD REZUL'TATOV
-write-host "---===PROVERKA VREMENNYH NASTROEK===---" -BackgroundColor White -ForegroundColor black
-"Data        : " + $date
-"Vremya       : " + $time
-"CHasovoj poyas: " + $timezone
+###ВЫВОД РЕЗУЛЬТАТОВ
+write-host "---===ПРОВЕРКА ВРЕМЕННЫХ НАСТРОЕК===---" -BackgroundColor White -ForegroundColor black
+"Дата        : " + $date
+"Время       : " + $time
+"Часовой пояс: " + $timezone
 if ($count_time -eq "1") {Write-Host $message_time -BackgroundColor Green -ForegroundColor Black} 
 if ($count_time -eq "2") {Write-Host $message_time -BackgroundColor Yellow -ForegroundColor Black} 
 if ($count_time -gt "2" -and $count_time -lt "5") {Write-Host $message_time -BackgroundColor Red -ForegroundColor Black}
 if ($count_time -eq "5") {Write-Host $message_time -BackgroundColor Yellow -ForegroundColor Black}
-if ($timezone -eq "(UTC+03:00)") {Write-Host "CHasovoj poyas ustanovlen pravil'no" -BackgroundColor Green -ForegroundColor Black}
-if ($timezone -ne "(UTC+03:00)") {Write-Host "CHasovoj poyas ustanovlen nepravil'no" -BackgroundColor Red -ForegroundColor Black}
+if ($timezone -eq "(UTC+03:00)") {Write-Host "Часовой пояс установлен правильно" -BackgroundColor Green -ForegroundColor Black}
+if ($timezone -ne "(UTC+03:00)") {Write-Host "Часовой пояс установлен неправильно" -BackgroundColor Red -ForegroundColor Black}
 ""
 
-write-host "---===PROVERKA BRANDMAUEHRA===---" -BackgroundColor White -ForegroundColor black
-if ($servicefw.Status -eq "Stopped") {Write-Host "Sluzhba brandmauehra vyklyuchena" -BackgroundColor Green -ForegroundColor Black} else {Write-Host "Sluzhba brandmauehra vklyuchena" -BackgroundColor Red -ForegroundColor Black}
+write-host "---===ПРОВЕРКА БРАНДМАУЭРА===---" -BackgroundColor White -ForegroundColor black
+if ($servicefw.Status -eq "Stopped") {Write-Host "Служба брандмауэра выключена" -BackgroundColor Green -ForegroundColor Black} else {Write-Host "Служба брандмауэра включена" -BackgroundColor Red -ForegroundColor Black}
 ""
-write-host "---===PROVERKA DOSTUPNOSTI KOORDINATORA===---" -BackgroundColor White -ForegroundColor black
-if (!$reg_vipnet) {Write-Host "PO ViPNet Client ne ustanovleno ili ne zapushcheno" -BackgroundColor Red -ForegroundColor Black}
+write-host "---===ПРОВЕРКА ДОСТУПНОСТИ КООРДИНАТОРА===---" -BackgroundColor White -ForegroundColor black
+if (!$reg_vipnet) {Write-Host "ПО ViPNet Client не установлено или не запущено" -BackgroundColor Red -ForegroundColor Black}
 else
 {
-if ($vipnet2 -eq "True") {Write-Host "Koordinator" $name_coord_vipnet $ip_coord_vipnet "dostupen" -BackgroundColor Green -ForegroundColor Black} else {Write-Host "Koordinator" $name_coord_vipnet $ip_coord_vipnet "nedostupen" -BackgroundColor Red -ForegroundColor Black}
+if ($vipnet2 -eq "True") {Write-Host "Координатор" $name_coord_vipnet $ip_coord_vipnet "доступен" -BackgroundColor Green -ForegroundColor Black} else {Write-Host "Координатор" $name_coord_vipnet $ip_coord_vipnet "недоступен" -BackgroundColor Red -ForegroundColor Black}
 }
 ""
-write-host "---===PROVERKA NALICHIYA TUNNELYA DO AS EHTRAN===---" -BackgroundColor White -ForegroundColor black
-if (!$reg_vipnet) {Write-Host "Ne udalos' obnaruzhit' zapushchennoe ili ustanovlennoe PO ViPNet Client" -BackgroundColor Red -ForegroundColor Black}
+write-host "---===ПРОВЕРКА НАЛИЧИЯ ТУННЕЛЯ ДО АС ЭТРАН===---" -BackgroundColor White -ForegroundColor black
+if (!$reg_vipnet) {Write-Host "Не удалось обнаружить запущенное или установленное ПО ViPNet Client" -BackgroundColor Red -ForegroundColor Black}
 else
 {
-if ($tun1_etran -eq "$etrserver" -or $tun2_etran -eq "$etrserver") {Write-Host "Tunnel' do" $etrserver "propisan" -BackgroundColor Green -ForegroundColor Black} else {Write-Host "Tunnel' do 10.248.35.9 otsutstvuet" -BackgroundColor Red -ForegroundColor Black}
+if ($tun1_etran -eq "$etrserver" -or $tun2_etran -eq "$etrserver") {Write-Host "Туннель до" $etrserver "прописан" -BackgroundColor Green -ForegroundColor Black} else {Write-Host "Туннель до 10.248.35.9 отсутствует" -BackgroundColor Red -ForegroundColor Black}
 }
 ""
-write-host "---===PROVERKA NASTROEK BRAUZERA===---" -BackgroundColor White -ForegroundColor black
-if ($IEProxy -eq "1") {Write-Host -BackgroundColor Green -ForegroundColor Black "Proksi-server v IE otklyuchen"}
-if ($IEProxy -eq "3") {Write-Host -BackgroundColor Red -ForegroundColor Black "Proksi-server v IE vklyuchen"}
-if ($IEProxy -eq "5" -or $IEProxy -eq "9") {Write-Host -BackgroundColor Yellow -ForegroundColor Black "Avtoopredelenie proksi-servera v IE vklyucheno"}
-if ($IEProxy -ne "1" -and $IEProxy -ne "3" -and $IEProxy -ne "5" -and $IEProxy -ne "9") {Write-Host -BackgroundColor Yellow -ForegroundColor Black "Nastrojki IE opredelit' ne udalos' :("}
+write-host "---===ПРОВЕРКА НАСТРОЕК БРАУЗЕРА===---" -BackgroundColor White -ForegroundColor black
+if ($IEProxy -eq "1") {Write-Host -BackgroundColor Green -ForegroundColor Black "Прокси-сервер в IE отключен"}
+if ($IEProxy -eq "3") {Write-Host -BackgroundColor Red -ForegroundColor Black "Прокси-сервер в IE включен"}
+if ($IEProxy -eq "5" -or $IEProxy -eq "9") {Write-Host -BackgroundColor Yellow -ForegroundColor Black "Автоопределение прокси-сервера в IE включено"}
+if ($IEProxy -ne "1" -and $IEProxy -ne "3" -and $IEProxy -ne "5" -and $IEProxy -ne "9") {Write-Host -BackgroundColor Yellow -ForegroundColor Black "Настройки IE определить не удалось :("}
 ""
-write-host "---===PROVERKA DOSTUPNOSTI AS EHTRAN===---" -BackgroundColor White -ForegroundColor black
-if ($etran.Open -eq "True") {Write-Host "AS EHTRAN" $etrserver "dostupna" -BackgroundColor Green -ForegroundColor Black} else {Write-Host "AS EHTRAN 10.248.35.9 nedostupna" -BackgroundColor Red -ForegroundColor Black}
+write-host "---===ПРОВЕРКА ДОСТУПНОСТИ АС ЭТРАН===---" -BackgroundColor White -ForegroundColor black
+if ($etran.Open -eq "True") {Write-Host "АС ЭТРАН" $etrserver "доступна" -BackgroundColor Green -ForegroundColor Black} else {Write-Host "АС ЭТРАН 10.248.35.9 недоступна" -BackgroundColor Red -ForegroundColor Black}
 if ($vipnet2 -eq "True" -and $IEProxy -eq "1" -and $etran.Open -ne "True")
     {
     if ($tun1_etran -eq "$etrserver" -or $tun2_etran -eq "$etrserver")
         {
-        "Vozmozhnye prichiny:"
-        "1. V nastrojkah PO ViPNet vyklyucheny tunneli;"
-        "2. Tunneli nastroeny na raboty po virtual'nym adresam, dostup nuzhno proverit' vruchnuyuж"
-        "4. Slomalsya EHTRAN.кирилЛИЦА"
+        "Возможные причины:"
+        "1. В настройках ПО ViPNet выключены туннели;"
+        "2. Туннели настроены на работы по виртуальным адресам, доступ нужно проверить вручную;"
+        "3. Доступ блокируется на координаторе;"
+        "4. Сломался ЭТРАН."
         }
     }
-
