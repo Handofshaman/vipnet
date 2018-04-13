@@ -360,7 +360,7 @@ if ($tun_etran -eq "$etrserver" -and $vipnet2 -eq "True")
 
 ###ВЫВОД РЕЗУЛЬТАТОВ
 write-host "---===ПРОВЕРКА ВРЕМЕННЫХ НАСТРОЕК===---" -BackgroundColor White -ForegroundColor black
-"Дата        : " + $date
+#"Дата        : " + $date
 "Время       : " + $time
 "Часовой пояс: " + $timezone
 if ($count_time -eq "1") {Write-Host $message_time -BackgroundColor Green -ForegroundColor Black} 
