@@ -299,11 +299,11 @@ else #если Ntp сервер не доступен
 [int]$timentp=-1
 }
 #в зависимости от расхождения времени сгенерировать сообщение
-if ($timentp -lt "60") {$count_time="1"; $message_time="Время на компьютере соответствует серверу $ntpserver"}
-if ($timentp -ge "60" -and $timenet -lt "3600") {$count_time="2"; $message_time="Время на компьютере отличается от сервера $ntpserver в пределах одного часа"}
-if ($timentp -ge "3600" -and $timentp -lt "86400") {$count_time="3"; $message_time="Время на компьютере отличается от сервера $ntpserver более чем на один час"}
-if ($timentp -ge "86400") {$count_time="4";  $message_time="Дата на компьютере оличается от сервера $ntpserver"}
-if ($timentp -eq "-1") {$count_time="5"; $message_time="Сервер времени $ntpserver недоступен, проверьте дату и время вручную"}
+#if ($timentp -lt "60") {$count_time="1"; $message_time="Время на компьютере соответствует серверу $ntpserver"}
+#if ($timentp -ge "60" -and $timenet -lt "3600") {$count_time="2"; $message_time="Время на компьютере отличается от сервера $ntpserver в пределах одного часа"}
+#if ($timentp -ge "3600" -and $timentp -lt "86400") {$count_time="3"; $message_time="Время на компьютере отличается от сервера $ntpserver более чем на один час"}
+#if ($timentp -ge "86400") {$count_time="4";  $message_time="Дата на компьютере оличается от сервера $ntpserver"}
+#if ($timentp -eq "-1") {$count_time="5"; $message_time="Сервер времени $ntpserver недоступен, проверьте дату и время вручную"}
 
 ###ПРОВЕРКА IE
 
